@@ -18,13 +18,14 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/")
-public class UserController {
+public class SignUpController {
 
     @Autowired
     private SignupBusinessService signupBusinessService;
 
     @Autowired
     private PasswordCryptographyProvider cryptographyProvider;
+
     /*
     @Parm  = SignupUserRequest
     @return SignupUserResponse
@@ -32,10 +33,9 @@ public class UserController {
     @Note- This method is mapped to /user/signup with an post method. This will register he user if everything is valid
      else This method will throw respective exception
      */
-    @RequestMapping(method = RequestMethod.POST,path = "/user/signup",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.POST, path = "/user/signup", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<SignupUserResponse> userSignup(final SignupUserRequest signupUserRequest) throws SignUpRestrictedException {
         //Transferring the SignupUserRequest to UserEntity
-        System.out.println(signupUserRequest);
         UserEntity newUser = new UserEntity();
         newUser.setFirstName(signupUserRequest.getFirstName());
         newUser.setLastName(signupUserRequest.getLastName());
@@ -47,7 +47,7 @@ public class UserController {
         newUser.setDob(signupUserRequest.getDob());
         newUser.setContactNumber(signupUserRequest.getContactNumber());
         newUser.setPassword(signupUserRequest.getPassword());
-        newUser.setRole("noadmin");
+        newUser.setRole("nonadmin");
         //Encryption takes place here
         final String[] encrypt = cryptographyProvider.encrypt(signupUserRequest.getPassword());
         newUser.setSalt(encrypt[0]);
@@ -56,4 +56,6 @@ public class UserController {
         SignupUserResponse userResponse = new SignupUserResponse().id(createdUser.getUuid()).status("USER SUCCESSFULLY REGISTERED");
         return new ResponseEntity<SignupUserResponse>(userResponse, HttpStatus.CREATED);
     }
+
 }
+

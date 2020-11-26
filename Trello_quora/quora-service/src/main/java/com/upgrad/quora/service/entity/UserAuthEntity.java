@@ -2,7 +2,7 @@ package com.upgrad.quora.service.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
-import java.sql.Timestamp;
+import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "user_auth")
@@ -17,21 +17,22 @@ public class UserAuthEntity {
     @Size(max = 200)
     private String uuid;
 
-    @Column(name = "user_id")
-    private Integer userId;
+    @JoinColumn(name = "user_id")
+    @ManyToOne
+    private UserEntity user;
 
     @Column(name = "access_token")
     @Size(max = 500)
     private String accessToken;
 
     @Column(name = "expires_at")
-    private Timestamp expiresAt;
+    private ZonedDateTime expiresAt;
 
     @Column(name = "login_at")
-    private Timestamp loginAt;
+    private ZonedDateTime loginAt;
 
     @Column(name = "logout_at")
-    private Timestamp logoutAt;
+    private ZonedDateTime logoutAt;
 
     public long getId() {
         return id;
@@ -49,12 +50,12 @@ public class UserAuthEntity {
         this.uuid = uuid;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public UserEntity getUser() {
+        return user;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setUser(UserEntity user) {
+        this.user = user;
     }
 
     public String getAccessToken() {
@@ -65,27 +66,27 @@ public class UserAuthEntity {
         this.accessToken = accessToken;
     }
 
-    public Timestamp getExpiresAt() {
+    public ZonedDateTime getExpiresAt() {
         return expiresAt;
     }
 
-    public void setExpiresAt(Timestamp expiresAt) {
+    public void setExpiresAt(ZonedDateTime expiresAt) {
         this.expiresAt = expiresAt;
     }
 
-    public Timestamp getLoginAt() {
+    public ZonedDateTime getLoginAt() {
         return loginAt;
     }
 
-    public void setLoginAt(Timestamp loginAt) {
+    public void setLoginAt(ZonedDateTime loginAt) {
         this.loginAt = loginAt;
     }
 
-    public Timestamp getLogoutAt() {
+    public ZonedDateTime getLogoutAt() {
         return logoutAt;
     }
 
-    public void setLogoutAt(Timestamp logoutAt) {
+    public void setLogoutAt(ZonedDateTime logoutAt) {
         this.logoutAt = logoutAt;
     }
 }
