@@ -6,6 +6,10 @@ import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "users")
+@NamedQueries({
+        @NamedQuery(name = "getUserByUserId",query = "Select u from UserEntity u where u.userName=:userName"),
+        @NamedQuery(name = "getUserByEmail",query = "select u from UserEntity u where u.email=:email")
+})
 public class UserEntity {
     @Id
     @Column(name = "id")
@@ -23,6 +27,10 @@ public class UserEntity {
     @Column(name = "lastname")
     @Size(max = 30)
     private String lastName;
+
+    @Column(name = "username")
+    @Size(max = 30)
+    private String userName;
 
     @Column(name = "email")
     @Size(max = 50)
@@ -152,7 +160,13 @@ public class UserEntity {
         this.contactNumber = contactNumber;
     }
 
+    public String getUserName() {
+        return userName;
+    }
 
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
 }
 
