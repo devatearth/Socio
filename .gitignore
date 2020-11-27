@@ -1,0 +1,5 @@
+Trello_quora/quora-api/src/main/resources/application.yaml
+Trello_quora/quora-db/src/main/resources/config/localhost.properties
+Trello_quora/quora-api/target/*
+Trello_quora/quora-db/target/*
+Trello_quora/quora-service/target/*
