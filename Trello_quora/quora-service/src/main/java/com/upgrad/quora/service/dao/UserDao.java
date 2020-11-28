@@ -34,7 +34,11 @@ public class UserDao {
     return newUser;
   }
   /* method to help create auth token */
-  public void createAuthToken(UserAuthEntity userAuthTokenEntity) {
+  public UserAuthEntity createAuthToken(UserAuthEntity userAuthTokenEntity) {
     entityManager.persist(userAuthTokenEntity);
+    return userAuthTokenEntity;
+  }
+  public void updateUser(final UserEntity updatedUserEntity){
+    entityManager.merge(updatedUserEntity);
   }
 }

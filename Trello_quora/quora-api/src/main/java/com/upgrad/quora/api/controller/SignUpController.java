@@ -43,6 +43,7 @@ public class SignUpController {
     /* 2. build the user entity object here */
     String salt = encrytedStuff[0];
     String encPassword = encrytedStuff[1];
+    System.out.println("Enc Password: " + encPassword);
     UserEntity newUser = this.buildUserEntity(signupUserRequest, salt, encPassword);
 
     /* 3. perform the required signup */
