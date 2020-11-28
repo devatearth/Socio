@@ -21,6 +21,7 @@ public class AuthenticationService {
 
     @Transactional
      public UserAuthEntity userSignin(String userName, String passWord) throws AuthenticationFailedException {
+       /*
         UserEntity user = userDao.getUserByUserName(userName);
         if (user == null) {
             throw new AuthenticationFailedException("ATH-001", "This username does not exist");
@@ -43,6 +44,7 @@ public class AuthenticationService {
             throw new AuthenticationFailedException("ATH-002","Password failed");
         }
 
-
+        */
+       return null;
     }
 }
