@@ -9,8 +9,10 @@ import com.upgrad.quora.service.dao.UserDao;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.exception.SignUpRestrictedException;
+import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.AuthenticationFailedException;
 import com.upgrad.quora.service.exception.SignOutRestrictedException;
+import com.upgrad.quora.service.exception.UserNotFoundException;
 
 /* java imports */
 import javax.transaction.Transactional;
@@ -95,6 +97,42 @@ public class UserService {
       char[] userPassword = password.toCharArray();
       String[] encrytedStuff = cryptor.encrypt(userPassword);
       return encrytedStuff;
+    }
+  }
+
+  /* a single method that can be used to check if the auth token given is a valid token or not */
+  public UserEntity performAuthTokenValidation(final String authTokenString) throws AuthorizationFailedException {
+    UserAuthEntity userAuthEntity = userDao.findUserByThisAuthToken(authTokenString);
+    if (userAuthEntity == null) {
+      throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+    }
+    else {
+      return userAuthEntity.getUser();
+    }
+  }
+
+  /* helps to fetch a single user entity based on the id value recived from the controller */
+  public UserEntity fetchUserById(final long id) throws UserNotFoundException {
+    UserEntity fetchedEntity = userDao.fetchUserById(id);
+    if (fetchedEntity == null) {
+      throw new UserNotFoundException("USR-001", "User with entered uuid does not exist");
+    }
+    else {
+      return fetchedEntity;
+    }
+  }
+
+  /* helps to perform the delete request if we have a valid user entity that is registered with us */
+  @Transactional
+  public UserEntity performDelete(UserEntity admin, final long userId) 
+  throws UserNotFoundException, AuthorizationFailedException {
+    UserEntity userEntity = this.fetchUserById(userId);
+    /* this is just a fallback */
+    if (!admin.getRole().equals("admin")) {
+      throw new AuthorizationFailedException("ATHR-003", "Unauthorized Access, Entered user is not an admin");
+    }
+    else {
+      return userDao.performDelete(admin, userId);
     }
   }
 }

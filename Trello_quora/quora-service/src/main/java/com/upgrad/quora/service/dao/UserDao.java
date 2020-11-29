@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.SignOutRestrictedException;
+import com.upgrad.quora.service.exception.UserNotFoundException;
+import com.upgrad.quora.service.exception.AuthorizationFailedException;
 
 /* java imports */
 import javax.persistence.EntityManager;
@@ -20,7 +22,7 @@ public class UserDao {
   /* method to retrieve a user by the user name */
   public UserEntity getUserByUserName(String userName) {
     try {
-        return entityManager.createNamedQuery("getUserByUserId", UserEntity.class).setParameter("userName", userName).getSingleResult();
+        return entityManager.createNamedQuery("getUserByUserName", UserEntity.class).setParameter("userName", userName).getSingleResult();
     } catch (Exception e) {
         return null;
     }
@@ -53,7 +55,31 @@ public class UserDao {
   }
 
   /* helps to locate a particular user by the auth token */
-  public UserAuthEntity findUserByThisAuthToken(final String accessToken) throws SignOutRestrictedException {
+  public UserAuthEntity findUserByThisAuthToken(final String accessToken) {
     return entityManager.createNamedQuery("fetchThisUserByJWTAuthToken", UserAuthEntity.class).setParameter("accessToken", accessToken).getSingleResult();
+  }
+
+  /* helps to locate a single user entity based on the id value that has been given from service */
+  public UserEntity fetchUserById(final long id) {
+    try {
+      return entityManager.createNamedQuery("getUserByUserId", UserEntity.class).setParameter("userId", id).getSingleResult();
+    }
+    catch (Exception e) {
+      System.out.println(": Exception Raised @ Fetch User By Id " + e);
+      return null;
+    }
+  }
+
+  /* helps to delete a single user entity from the database upon the id */
+  public UserEntity performDelete(UserEntity admin, final long userId) throws AuthorizationFailedException {
+    /* again just a precaution */
+    if (!admin.getRole().equals("admin")) {
+      throw new AuthorizationFailedException("ATHR-003", "Unauthorized Access, Entered user is not an admin");
+    }
+    else {
+      UserEntity toBeDeleted = this.fetchUserById(userId);
+      this.entityManager.remove(toBeDeleted);
+      return toBeDeleted;
+    }
   }
 }
