@@ -12,37 +12,43 @@ import java.time.ZonedDateTime;
 
 @Service
 public class AuthenticationService {
+  @Autowired
+  private UserDao userDao;
 
-    @Autowired
-    private UserDao userDao;
+  @Autowired
+  private PasswordCryptographyProvider cryptographyProvider;
 
-    @Autowired
-    private PasswordCryptographyProvider cryptographyProvider;
-
-    @Transactional
-     public UserAuthEntity userSignin(String userName, String passWord) throws AuthenticationFailedException {
-        UserEntity user = userDao.getUserByUserName(userName);
-        if (user == null) {
-            throw new AuthenticationFailedException("ATH-001", "This username does not exist");
-        }
-        String hashedPassword = cryptographyProvider.encrypt(passWord, user.getSalt());
-        if (user.getPassword().equals(hashedPassword)) {
-            JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(hashedPassword);
-            UserAuthEntity userAuthTokenEntity = new UserAuthEntity();
-            userAuthTokenEntity.setUser(user);
-            userAuthTokenEntity.setUuid(user.getUuid());
-            final ZonedDateTime now = ZonedDateTime.now();
-            final ZonedDateTime expiresAt = now.plusHours(8);
-            userAuthTokenEntity.setAccessToken(jwtTokenProvider.generateToken(user.getUuid(), now, expiresAt));
-            userAuthTokenEntity.setLoginAt(now);
-            userAuthTokenEntity.setExpiresAt(expiresAt);
-
-            userDao.createAuthToken(userAuthTokenEntity);
-            return userAuthTokenEntity;
-        }else{
-            throw new AuthenticationFailedException("ATH-002","Password failed");
-        }
-
-
+  @Transactional
+  public UserAuthEntity userSignin(String userName, String passWord) throws AuthenticationFailedException {
+    /* first check if the user name is registered or not */
+    UserEntity user = userDao.getUserByUserName(userName);
+    if (user == null) {
+      throw new AuthenticationFailedException("ATH-001", "This username does not exist");
     }
+    
+    /* if you are here, it means that we have a registered user name with us in the database */
+    String hashedPassword = cryptographyProvider.encrypt(passWord.toCharArray(), user.getSalt());
+    if (user.getPassword().equals(hashedPassword)) {
+      System.out.println(">_ performing sign in process...");
+
+      final ZonedDateTime now = ZonedDateTime.now();
+      final ZonedDateTime expiresAt = now.plusHours(8);
+      JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(hashedPassword);
+
+      /* build the user auth token object */
+      UserAuthEntity userAuthTokenEntity = new UserAuthEntity();
+      userAuthTokenEntity.setUser(user);
+      userAuthTokenEntity.setUuid(user.getUuid());
+      userAuthTokenEntity.setAccessToken(jwtTokenProvider.generateToken(user.getUuid(), now, expiresAt));
+      userAuthTokenEntity.setLoginAt(now);
+      userAuthTokenEntity.setExpiresAt(expiresAt);
+      
+      userDao.createAuthToken(userAuthTokenEntity);
+      userDao.updateUser(user);
+      return userAuthTokenEntity;
+    }
+    else{
+      throw new AuthenticationFailedException("ATH-002","Password failed");
+    }
+  }
 }

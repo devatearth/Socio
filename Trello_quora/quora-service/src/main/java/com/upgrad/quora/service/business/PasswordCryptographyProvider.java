@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class PasswordCryptographyProvider {
-
     private static String SECRET_KEY_ALGORITHM = "PBKDF2WithHmacSHA512";
     private static int HASHING_ITERATIONS = 1000;
     private static int HASHING_KEY_LENGTH = 64;
@@ -27,10 +26,10 @@ public class PasswordCryptographyProvider {
      * @param password char array.
      * @return String array with [0] encoded salt [1] hashed password.
      */
-    public String[] encrypt(final String password) {
-        byte[] salt = generateSaltBytes();
-        byte[] hashedPassword = hashPassword(password.toCharArray(), salt);
-        return new String[]{getBase64EncodedBytesAsString(salt), bytesToHex(hashedPassword)};
+    public String[] encrypt(final char[] password) {
+      byte[] salt = generateSaltBytes();
+      byte[] hashedPassword = hashPassword(password, salt);
+      return new String[]{getBase64EncodedBytesAsString(salt), bytesToHex(hashedPassword)};
     }
 
     /**
@@ -41,8 +40,8 @@ public class PasswordCryptographyProvider {
      * @param salt     byte array.
      * @return byte array of hashed password.
      */
-    public static String encrypt(final String password, String salt) {
-        return bytesToHex(hashPassword(password.toCharArray(), getBase64DecodedStringAsBytes(salt)));
+    public static String encrypt(final char[] password, String salt) {
+        return bytesToHex(hashPassword(password, getBase64DecodedStringAsBytes(salt)));
     }
 
     /**
