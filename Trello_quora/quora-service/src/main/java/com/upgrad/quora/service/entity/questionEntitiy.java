@@ -6,6 +6,11 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "question")
+@NamedQueries({
+  @NamedQuery(name = "performFetchAllQuestions", query = "Select q from questionEntitiy q"),
+  @NamedQuery(name = "performQuestionGetByIdQuery", query = "Select q from questionEntitiy q where q.id=:questionId"),
+  @NamedQuery(name = "performFetchAllQuestionsByUser", query = "Select q from questionEntitiy q where q.userId=:userId")
+})
 public class questionEntitiy {
 
     @Id
