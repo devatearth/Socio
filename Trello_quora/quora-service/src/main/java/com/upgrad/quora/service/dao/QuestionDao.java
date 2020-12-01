@@ -23,12 +23,27 @@ public class QuestionDao {
 
   /* method to retrieve all the questions from the database */
   public List<questionEntitiy> getAllQuestions() throws Exception {
-    return entityManager.createNamedQuery("performFetchAllQuestions", questionEntitiy.class).getResultList();
+    try {
+      return entityManager.createNamedQuery("performFetchAllQuestions", questionEntitiy.class).getResultList();
+    }
+    catch (Exception e) {
+      /* just a precautionary fallback incase something goes wrong, we can get to know what happed */
+      System.out.println("Get All Questions: Exception Raised");
+      System.out.println(e);
+      return null;
+    }
   }
 
   /* method to retreive a single question entity by id */
-  public questionEntitiy getQuestionByIdValue(long qId) {
-    return entityManager.createNamedQuery("performQuestionGetByIdQuery", questionEntitiy.class).setParameter("questionId", qId).getSingleResult();
+  public questionEntitiy getQuestionByIdValue(long qId) throws Exception {
+    try {
+      return entityManager.createNamedQuery("performQuestionGetByIdQuery", questionEntitiy.class).setParameter("questionId", qId).getSingleResult();
+    }
+    catch (Exception e) {
+      System.out.println("Get Question By Id Value: Exception Thrown");
+      System.out.println(e);
+      return null;
+    }
   }
 
   /* method to help update an existing question entity */
@@ -45,6 +60,14 @@ public class QuestionDao {
   
   /* method helps to get all questions pertaining to a particuarl user */
   public List<questionEntitiy> getAllQuestionsByUser(final long userId) throws Exception {
-    return entityManager.createNamedQuery("performFetchAllQuestionsByUser", questionEntitiy.class).setParameter("userId", (int) userId).getResultList();
+    System.out.println("User Id: " + userId);
+    try {
+      return entityManager.createNamedQuery("performFetchAllQuestionsByUser", questionEntitiy.class).setParameter("userId", (int) userId).getResultList();
+    }
+    catch (Exception e) {
+      System.out.println("Get Alll Questions By User: Exception Thrown");
+      System.out.println(e);
+      return null;
+    }
   }
 }

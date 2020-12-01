@@ -17,6 +17,8 @@ import com.upgrad.quora.service.exception.UserNotFoundException;
 /* java imports */
 import javax.transaction.Transactional;
 import java.time.ZonedDateTime;
+import java.util.UUID;
+import java.util.Base64;
 
 /** 
   * UserService.Class helps to handle all service details for users
@@ -30,14 +32,51 @@ public class UserService {
   @Autowired
   private PasswordCryptographyProvider cryptor;
   
+  /* performs the actual sign up process with the database */
   @Transactional
-  public UserEntity performSignUp(UserEntity newUser) throws SignUpRestrictedException {
-    return userDao.RegisterUser(newUser);
+  public UserEntity performSignUp(UserEntity newUser, String userName, String email, String password) throws SignUpRestrictedException {
+    /* if the username provided already exists in the current database */
+    if(userDao.getUserByUserName(userName) != null){
+      throw new SignUpRestrictedException("SGR-001","Try any other Username, this Username has already been taken");
+    }
+    /* if the email Id provided by the user already exists in the current database */
+    else if(userDao.getUserByEmail(email) != null){
+      throw new SignUpRestrictedException("SGR-002","This user has already been registered, try with any other emailId");
+    }
+    else {
+      /* perform encryption for the password and generate the salt */
+      char[] userPassword = password.toCharArray();
+      String[] encrytedStuff = cryptor.encrypt(userPassword);
+      String salt = encrytedStuff[0];
+      String encPassword = encrytedStuff[1];
+
+      /* update details for the newUser Entity */
+      newUser.setPassword(encPassword);
+      newUser.setSalt(salt);
+
+      /* register and return as needed */
+      UserEntity u = userDao.RegisterUser(newUser);
+      if (u == null) {
+        /* this is just in case for us to know when there is a failure - don;t remove it otherwise it may be difficult to 
+         understand where the failure is happening! */
+        throw new SignUpRestrictedException("SGR-003","DB Registration Error!");
+      }
+      else {
+        return u;
+      }
+    }
   }
   
   /* user sign in service */
   @Transactional
-  public UserAuthEntity performSignIn(String userName, String passWord) throws AuthenticationFailedException {
+  public UserAuthEntity performSignIn(String authorization) throws AuthenticationFailedException {
+    /* 1. authorization details are sent through the headers. you'll need to get the username and password decoded */
+    byte[] decode = Base64.getDecoder().decode(authorization.split("Basic ")[1]);
+    String decodedText = new String(decode);
+    String[] decodedArray = decodedText.split(":");
+    String userName = decodedArray[0];
+    String password = decodedArray[1];
+
     /* first check if the user name is registered or not */
     UserEntity user = userDao.getUserByUserName(userName);
     if (user == null) {
@@ -45,8 +84,12 @@ public class UserService {
     }
     
     /* if you are here, it means that we have a registered user name with us in the database */
-    String hashedPassword = cryptor.encrypt(passWord.toCharArray(), user.getSalt());
-    if (user.getPassword().equals(hashedPassword)) {
+    String hashedPassword = cryptor.encrypt(password.toCharArray(), user.getSalt());
+    if (!user.getPassword().equals(hashedPassword)) {
+      throw new AuthenticationFailedException("ATH-002","Password failed");
+    }
+    else{
+      /* we are good to go here... */
       final ZonedDateTime now = ZonedDateTime.now();
       final ZonedDateTime expiresAt = now.plusHours(8);
       JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(hashedPassword);
@@ -59,12 +102,15 @@ public class UserService {
       userAuthTokenEntity.setLoginAt(now);
       userAuthTokenEntity.setExpiresAt(expiresAt);
       
-      userDao.createAuthToken(userAuthTokenEntity);
-      userDao.updateUser(user);
-      return userAuthTokenEntity;
-    }
-    else{
-      throw new AuthenticationFailedException("ATH-002","Password failed");
+      UserAuthEntity authedEntity = userDao.createAuthToken(userAuthTokenEntity);
+      /* a back up exception that I am createing to keep a track of things! */
+      if (authedEntity == null) {
+        throw new AuthenticationFailedException("ATH-003","Could Not Create Auth Token");
+      }
+      else {
+        userDao.updateUser(user);
+        return userAuthTokenEntity;
+      }
     }
   }
 
@@ -82,29 +128,14 @@ public class UserService {
     }
   }
   
-  /* here we would be generating the salt and password enc only if the credentials are fresh */
-  public String[] performValidate(String userName, String email, String password) 
-  throws SignUpRestrictedException {
-    /* if the username provided already exists in the current database */
-    if(userDao.getUserByUserName(userName) != null){
-      throw new SignUpRestrictedException("SGR-001","Try any other Username, this Username has already been taken");
-    }
-    /* if the email Id provided by the user already exists in the current database */
-    else if(userDao.getUserByEmail(email) != null){
-      throw new SignUpRestrictedException("SGR-002","This user has already been registered, try with any other emailId");
-    }
-    else {
-      char[] userPassword = password.toCharArray();
-      String[] encrytedStuff = cryptor.encrypt(userPassword);
-      return encrytedStuff;
-    }
-  }
-
   /* a single method that can be used to check if the auth token given is a valid token or not */
   public UserEntity performAuthTokenValidation(final String authTokenString) throws AuthorizationFailedException {
     UserAuthEntity userAuthEntity = userDao.findUserByThisAuthToken(authTokenString);
     if (userAuthEntity == null) {
       throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+    }
+    else if (userAuthEntity.getLogoutAt() != null) {
+      throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to get user details");
     }
     else {
       return userAuthEntity.getUser();
