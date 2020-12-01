@@ -1,11 +1,11 @@
 package com.upgrad.quora.api.controller;
 
 import com.upgrad.quora.api.model.SigninResponse;
+import com.upgrad.quora.api.model.SignoutResponse;
 import com.upgrad.quora.api.model.SignupUserRequest;
 import com.upgrad.quora.api.model.SignupUserResponse;
-import com.upgrad.quora.service.business.AuthenticationService;
 import com.upgrad.quora.service.business.PasswordCryptographyProvider;
-import com.upgrad.quora.service.business.SignupBusinessService;
+import com.upgrad.quora.service.business.UserBusinessService;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthenticationFailedException;
@@ -15,10 +15,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.ZonedDateTime;
 import java.util.Base64;
 import java.util.UUID;
 
@@ -27,15 +29,11 @@ public class UserController {
 
     //Creating an instance of SignupBusinessService to help with SignUp logic
     @Autowired
-    private SignupBusinessService signupBusinessService;
+    private UserBusinessService userBusinessService;
 
     //Creating an instance of PasswordCryptographyProvider to help with encryption of password
     @Autowired
     private PasswordCryptographyProvider cryptographyProvider;
-
-    //Creating an Instance of AuthenticationService to Authenticate a user
-    @Autowired
-    private AuthenticationService authenticationService;
 
     /*
     * This endpoint is used to register a new user in the Quora Application.
@@ -72,10 +70,11 @@ public class UserController {
         final String[] encrypt = cryptographyProvider.encrypt(signupUserRequest.getPassword());
         newUser.setSalt(encrypt[0]);
         newUser.setPassword(encrypt[1]);
-        UserEntity createdUser = signupBusinessService.SignUp(newUser);
+        UserEntity createdUser = userBusinessService.SignUp(newUser);
         SignupUserResponse userResponse = new SignupUserResponse().id(createdUser.getUuid()).status("USER SUCCESSFULLY REGISTERED");
         return new ResponseEntity<SignupUserResponse>(userResponse, HttpStatus.CREATED);
     }
+
     /*
     * This endpoint is used for user authentication. The user authenticates in the application and after successful
       authentication, JWT token is given to a user.
@@ -96,20 +95,44 @@ public class UserController {
     @Return ResponseEntity<SigninResponse>
      */
     @RequestMapping(method = RequestMethod.POST, path = "/user/signin", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<SigninResponse> userSignin(String authorization) throws AuthenticationFailedException {
+    public ResponseEntity<SigninResponse> userSignin(@RequestHeader("authorization") String authorization) throws AuthenticationFailedException {
         byte[] decode = Base64.getDecoder().decode(authorization.split("Basic ")[1]);
         String decodedText = new String(decode);
         String[] decodedArray = decodedText.split(":");
-        UserAuthEntity userAuthEntity = authenticationService.userSignin(decodedArray[0], decodedArray[1]);
+        UserAuthEntity userAuthEntity = userBusinessService.userSignin(decodedArray[0], decodedArray[1]);
         SigninResponse userResponse = new SigninResponse();
         userResponse.setId(userAuthEntity.getUuid());
         userResponse.setMessage("SIGNED IN SUCCESSFULLY");
         HttpHeaders headers = new HttpHeaders();
         headers.add("access-token", userAuthEntity.getAccessToken());
-        return new ResponseEntity<SigninResponse>(userResponse,headers, HttpStatus.OK);
+        return new ResponseEntity<SigninResponse>(userResponse, headers, HttpStatus.OK);
 
     }
 
+    /*
+    * This endpoint is used to sign out from the Quora Application. The user cannot access any other endpoint once he is
+      signed out of the application.
+    * It should be a POST request.
+    * This endpoint must request the access token of the signed in user in the authorization field of the Request Header.
+    * If the access token provided by the user does not exist in the database, throw 'SignOutRestrictedException' with
+      the message code -'SGR-001' and message - 'User is not Signed in'.
+    * If the access token provided by the user is valid, update the LogoutAt time of the user in the database and
+      return the 'uuid' of the signed out user from 'users' table and message 'SIGNED OUT SUCCESSFULLY' in the JSON
+      response with the corresponding HTTP status.
+     @Return SignoutResponse
+     */
+
+    @RequestMapping(method = RequestMethod.POST, path = "/user/signout", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<SignoutResponse> userSignout(@RequestHeader("authorization") String accesstoken) throws SignUpRestrictedException {
+
+        UserAuthEntity userAuthEntity = userBusinessService.performSignOut(accesstoken);
+        userAuthEntity.setLogoutAt(ZonedDateTime.now());
+        userBusinessService.performUpdate(userAuthEntity);
+        SignoutResponse userResponse = new SignoutResponse();
+        userResponse.setId(userAuthEntity.getUuid());
+        userResponse.setMessage("SIGNED OUT SUCCESSFULLY");
+        return new ResponseEntity<SignoutResponse>(userResponse, HttpStatus.OK);
+    }
 
 }
 

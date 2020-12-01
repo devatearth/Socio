@@ -1,11 +1,16 @@
 package com.upgrad.quora.service.entity;
 
+import org.hibernate.annotations.Cascade;
+
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "user_auth")
+@NamedQueries({
+        @NamedQuery(name = "getUserAuthByAccessToken",query = "Select u from UserAuthEntity u where u.accessToken=:accessToken"),
+})
 public class UserAuthEntity {
 
     //id column is primary key
@@ -21,7 +26,7 @@ public class UserAuthEntity {
 
     //user_id column will be mapped to User object
     @JoinColumn(name = "user_id")
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private UserEntity user;
 
     //access_token column will map to JWT generated token

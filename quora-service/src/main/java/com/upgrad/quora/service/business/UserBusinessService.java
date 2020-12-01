@@ -4,6 +4,7 @@ import com.upgrad.quora.service.dao.UserDao;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthenticationFailedException;
+import com.upgrad.quora.service.exception.SignUpRestrictedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,19 +12,51 @@ import javax.transaction.Transactional;
 import java.time.ZonedDateTime;
 
 /*
-This class is implemented to provide Authentication as service
+This class implements the user signup feature
  */
-
 @Service
-public class AuthenticationService {
+public class UserBusinessService {
 
-    //Creating an instance to access database
-    @Autowired
-    private UserDao userDao;
 
     //Creating an instance to encrypt the password
     @Autowired
     private PasswordCryptographyProvider cryptographyProvider;
+
+    //Creating an instance to access DB
+    @Autowired
+    private UserDao userDao;
+
+    /*
+    This method will get the user as input and performs the task of creating the user.
+    @Parm UserEntity
+    @Return UserEntity
+     */
+    @Transactional
+    public UserEntity SignUp(UserEntity newUser) throws SignUpRestrictedException {
+        if (userDao.getUserByUserName(newUser.getUserName()) != null) {
+            throw new SignUpRestrictedException("SGR-001", "Try any other Username, this Username has already been taken");
+        } else if (userDao.getUserByEmail(newUser.getEmail()) != null) {
+            throw new SignUpRestrictedException("SGR-002", "This user has already been registered, try with any other emailId");
+        } else {
+            return userDao.RegisterUser(newUser);
+        }
+
+    }
+
+    @Transactional
+    public UserAuthEntity performSignOut(String authorization) throws SignUpRestrictedException {
+        UserAuthEntity userAuthEntity = userDao.getUserAuthEntityByAccessToken(authorization);
+        if (userAuthEntity == null) {
+            throw new SignUpRestrictedException("SGR-001", "User is not Signed in");
+        } else {
+            return userAuthEntity;
+        }
+    }
+
+    @Transactional
+    public void performUpdate(UserAuthEntity userAuthEntity) {
+        userDao.updateUserAuthEntity(userAuthEntity);
+    }
 
     /*
     @parm userName,passWord
@@ -57,4 +90,6 @@ public class AuthenticationService {
 
 
     }
+
 }
+
