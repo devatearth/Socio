@@ -19,13 +19,15 @@ import com.upgrad.quora.service.business.UserService;
 import com.upgrad.quora.service.business.QuestionService;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.entity.UserAuthEntity;
-import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.api.model.QuestionRequest;
 import com.upgrad.quora.api.model.QuestionEditRequest;
 import com.upgrad.quora.api.model.QuestionResponse;
 import com.upgrad.quora.api.model.QuestionEditResponse;
 import com.upgrad.quora.api.model.QuestionDeleteResponse;
 import com.upgrad.quora.api.model.QuestionDetailsResponse;
+import com.upgrad.quora.service.exception.InvalidQuestionException;
+import com.upgrad.quora.service.exception.AuthorizationFailedException;
+import com.upgrad.quora.service.exception.UserNotFoundException;
 
 /* java imports */
 import java.util.List;
@@ -47,7 +49,7 @@ public class QuestionController {
 
   /* this method is responsible for handling a new question creation request from the client side */
   @RequestMapping(value = "/question/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-  public ResponseEntity<QuestionResponse> createQuestion(@RequestHeader("authorization") final String authTokenString, QuestionRequest question) 
+  public ResponseEntity<QuestionResponse> createQuestion(@RequestHeader("authorization") final String authTokenString, @RequestBody QuestionRequest question) 
   throws AuthorizationFailedException, Exception {
     /* 1. we first need to check whether the jwt token received is ok or not */
     UserEntity isValidRequestor = userService.performAuthTokenValidation(authTokenString);
@@ -91,7 +93,7 @@ public class QuestionController {
   @RequestMapping(value = "/question/edit/{questionId}", method = RequestMethod.PUT,
   consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
   public ResponseEntity<QuestionEditResponse> editQuestionContent(@RequestHeader("authorization") final String authTokenString, @PathVariable long questionId, @RequestBody QuestionEditRequest editRequest) 
-  throws AuthorizationFailedException, Exception {
+  throws AuthorizationFailedException, InvalidQuestionException, Exception {
     /* 1. we first need to check whether the jwt token received is ok or not, and then get the existing 
      question entity frm the database */
     UserEntity isValidRequestor = userService.performAuthTokenValidation(authTokenString);
@@ -129,14 +131,14 @@ public class QuestionController {
     /* 3. send the response to the client side */
     QuestionDeleteResponse qResponse = new QuestionDeleteResponse();
     qResponse.setId(uuid);
-    qResponse.setStatus("'QUESTION DELETED");
+    qResponse.setStatus("QUESTION DELETED");
     return new ResponseEntity(qResponse, HttpStatus.OK);
   }
 
   /* this method is responsible or getting questions of a particular user through user id */
   @RequestMapping(value = "/question/all/{userId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
   public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestionsByUser(@RequestHeader("authorization") final String authTokenString, @PathVariable long userId) 
-  throws AuthorizationFailedException, Exception {
+  throws AuthorizationFailedException, UserNotFoundException, Exception {
     /* 1. we first need to check whether the jwt token received is ok or not */
     UserEntity isValidRequestor = userService.performAuthTokenValidation(authTokenString);
     

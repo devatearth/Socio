@@ -42,56 +42,47 @@ public class UserController {
   @RequestMapping(method = RequestMethod.POST, path = "/user/signup", 
   consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, 
   produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-  public ResponseEntity<SignupUserResponse> signUp(final SignupUserRequest signupUserRequest) throws SignUpRestrictedException {
-    /* 1. generate the required encrypted details for the user entity */
+  public ResponseEntity<SignupUserResponse> signUp(final SignupUserRequest signupUserRequest) 
+  throws SignUpRestrictedException {
+    /* 1. build a user entity. we will use this object to check details in the next step */
+    /* keep seperate the username, email and password to be passed to the service */
+    UserEntity newUser = this.buildUserEntity(signupUserRequest);
     String userName = signupUserRequest.getUserName();
     String email = signupUserRequest.getEmailAddress();
     String password = signupUserRequest.getPassword();
-    String[] encrytedStuff = userService.performValidate(userName, email, password);
-    
-    /* 2. build the user entity object here */
-    String salt = encrytedStuff[0];
-    String encPassword = encrytedStuff[1];
-    UserEntity newUser = this.buildUserEntity(signupUserRequest, salt, encPassword);
 
-    /* 3. perform the required signup */
-    UserEntity registeredEntity = userService.performSignUp(newUser);
+    /* 2. send the details to the service handler now */
+    UserEntity registeredEntity = userService.performSignUp(newUser, userName, email, password);
 
-    /* 4. build the required sign up response object */
+    /* 3. build the required sign up response object */
     SignupUserResponse signupResponse = new SignupUserResponse();
     signupResponse.setId(registeredEntity.getUuid());
     signupResponse.setStatus("USER SUCCESSFULLY REGISTERED");
 
-    /* 5. send the required response to the client side */
+    /* 4. send the required response to the client side */
     return new ResponseEntity(signupResponse, HttpStatus.OK);
   }
   
   /* user signin handler */
   @RequestMapping(method = RequestMethod.POST, path = "/user/signin", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-  public ResponseEntity<SigninResponse> signIn(@RequestHeader("authorization") String authorization) throws AuthenticationFailedException {
-    /* 1. authorization details are sent through the headers. you'll need to get the username and password decoded */
-    byte[] decode = Base64.getDecoder().decode(authorization.split("Basic ")[1]);
-    String decodedText = new String(decode);
-    String[] decodedArray = decodedText.split(":");
+  public ResponseEntity<SigninResponse> signIn(@RequestHeader("authorization") String authorization) 
+  throws AuthenticationFailedException {
+    /* 1. call the respective signin method that will help sign in the user */
+    UserAuthEntity userAuthEntity = userService.performSignIn(authorization);
 
-    /* 2. call the respective signin method that will help sign in the user */
-    String userName = decodedArray[0];
-    String password = decodedArray[1];
-    UserAuthEntity userAuthEntity = userService.performSignIn(userName, password);
-
-    /* 3. finally send the required response to the client side for confirming the success login */
+    /* 2. send the required response to the client side for confirming the success login */
     SigninResponse userResponse = new SigninResponse();
     userResponse.setId(userAuthEntity.getUuid());
     userResponse.setMessage("SIGNED IN SUCCESSFULLY");
     HttpHeaders headers = new HttpHeaders();
     headers.add("access-token", userAuthEntity.getAccessToken());
-
     return new ResponseEntity<SigninResponse>(userResponse,headers, HttpStatus.OK);
   }
   
   /* user signout handler */
   @RequestMapping(method = RequestMethod.POST, path = "/user/signout", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-  public ResponseEntity<SignoutResponse> signOut(@RequestHeader("authorization") String authTokenString) throws SignOutRestrictedException {
+  public ResponseEntity<SignoutResponse> signOut(@RequestHeader("authorization") String authTokenString) 
+  throws SignOutRestrictedException {
     UserEntity userEntity = userService.performSignOut(authTokenString);
     SignoutResponse soResponse = new SignoutResponse();
     soResponse.setId(userEntity.getUuid());
@@ -100,7 +91,7 @@ public class UserController {
   }
   
   /* helps build the required user entity object - portions of this entity is raw and un processed*/
-  private UserEntity buildUserEntity(final SignupUserRequest signupUserRequest, String salt, String encPassword) {
+  private UserEntity buildUserEntity(final SignupUserRequest signupUserRequest) {
     UserEntity newUser = new UserEntity();
     newUser.setFirstName(signupUserRequest.getFirstName());
     newUser.setLastName(signupUserRequest.getLastName());
@@ -111,8 +102,6 @@ public class UserController {
     newUser.setAboutMe(signupUserRequest.getAboutMe());
     newUser.setDob(signupUserRequest.getDob());
     newUser.setContactNumber(signupUserRequest.getContactNumber());
-    newUser.setPassword(encPassword);
-    newUser.setSalt(salt);
     newUser.setRole("nonadmin");
 
     /* finally return the new user that has been built */
