@@ -1,5 +1,6 @@
 package com.upgrad.quora.service.business;
 
+import com.upgrad.quora.service.dao.UserAuthDao;
 import com.upgrad.quora.service.dao.UserDao;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
@@ -19,13 +20,16 @@ public class AdminBusinessService {
     @Autowired
     private UserDao userDao;
 
+    //Creating an instance to access DB
+    @Autowired
+    private UserAuthDao userAuthDao;
     /*This method will validate the access token
     @Parm -accessToken
     @Return - UserAuthEntity
      */
     @Transactional
     public UserAuthEntity ValidateAccessToken(String accessToken) throws AuthorizationFailedException {
-        UserAuthEntity userAuthEntity = userDao.getUserAuthEntityByAccessToken(accessToken);
+        UserAuthEntity userAuthEntity = userAuthDao.getUserAuthEntityByAccessToken(accessToken);
         if (userAuthEntity == null) {
             throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
         }

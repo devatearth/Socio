@@ -42,24 +42,6 @@ public class UserDao {
         return newUser;
     }
 
-    //This method perist the UserAuthEntity
-    public void createAuthToken(UserAuthEntity userAuthTokenEntity) {
-        entityManager.persist(userAuthTokenEntity);
-    }
-
-    //this method will get the UserAuthEntity by accessToken
-    public UserAuthEntity getUserAuthEntityByAccessToken(String accessToken) {
-        try {
-            return entityManager.createNamedQuery("getUserAuthByAccessToken", UserAuthEntity.class).setParameter("accessToken", accessToken).getSingleResult();
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    //This method will update the userAuthEntity
-    public void updateUserAuthEntity(UserAuthEntity userAuthEntity) {
-        entityManager.merge(userAuthEntity);
-    }
 
     //This method will take the UserName as input and returns the User object, If exist in DB else returns null
     public UserEntity getUserByUserId(String userId) {
