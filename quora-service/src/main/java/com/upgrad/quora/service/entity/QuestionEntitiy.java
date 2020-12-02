@@ -3,11 +3,15 @@ package com.upgrad.quora.service.entity;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.sql.Timestamp;
+import java.time.ZonedDateTime;
 
 //This model is implemented to map with question table in DB
 @Entity
 @Table(name = "question")
-public class questionEntitiy {
+@NamedQueries({
+        @NamedQuery(name = "getAllQuestions",query = "Select u from QuestionEntitiy u"),
+})
+public class QuestionEntitiy {
 
     //id field is primary key
     @Id
@@ -27,7 +31,7 @@ public class questionEntitiy {
 
     //date column will contain the date at whichh the question is posted
     @Column(name = "date")
-    private Timestamp date;
+    private ZonedDateTime date;
 
     //user_id column will contain the user who posted the question
     @Column(name = "user_id")
@@ -57,11 +61,11 @@ public class questionEntitiy {
         this.content = content;
     }
 
-    public Timestamp getDate() {
+    public ZonedDateTime getDate() {
         return date;
     }
 
-    public void setDate(Timestamp date) {
+    public void setDate(ZonedDateTime date) {
         this.date = date;
     }
 

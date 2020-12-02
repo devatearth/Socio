@@ -9,7 +9,7 @@ This model class maps to the answer table in DB
  */
 @Entity
 @Table(name = "answer")
-public class answerEntity {
+public class AnswerEntity {
     //id column is primary key
     @Id
     @Column(name = "id")

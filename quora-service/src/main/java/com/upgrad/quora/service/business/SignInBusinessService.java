@@ -1,5 +1,6 @@
 package com.upgrad.quora.service.business;
 
+import com.upgrad.quora.service.dao.UserAuthDao;
 import com.upgrad.quora.service.dao.UserDao;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
@@ -23,7 +24,12 @@ public class SignInBusinessService {
     //Creating an instance to access DB
     @Autowired
     private UserDao userDao;
+
+    //Creating an instance to access DB
+    @Autowired
+    private UserAuthDao userAuthDao;
     /*
+
     @parm userName,passWord
     @Return UserAuthEntity
     This method will take username and password as input and checks the user exist in DB and performs
@@ -47,7 +53,7 @@ public class SignInBusinessService {
             userAuthTokenEntity.setLoginAt(now);
             userAuthTokenEntity.setExpiresAt(expiresAt);
 
-            userDao.createAuthToken(userAuthTokenEntity);
+            userAuthDao.createAuthToken(userAuthTokenEntity);
             return userAuthTokenEntity;
         } else {
             throw new AuthenticationFailedException("ATH-002", "Password failed");
