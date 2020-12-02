@@ -35,7 +35,7 @@ public class AdminController {
       'users' table and message 'USER SUCCESSFULLY DELETED' in the JSON response with the corresponding HTTP status.
      */
     @RequestMapping(path = "/admin/user/{userId}", method = RequestMethod.DELETE)
-    public ResponseEntity<UserDeleteResponse> deleteUser(@RequestParam("userId") String userId, @RequestHeader("authorization") String accessToken) throws AuthorizationFailedException, UserNotFoundException {
+    public ResponseEntity<UserDeleteResponse> deleteUser(@PathVariable("userId") String userId, @RequestHeader("authorization") String accessToken) throws AuthorizationFailedException, UserNotFoundException {
         //Validating the access token
         UserAuthEntity validAuth = adminBusinessService.ValidateAccessToken(accessToken);
         //Validating if the user is admin or not
