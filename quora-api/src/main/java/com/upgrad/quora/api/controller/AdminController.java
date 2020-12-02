@@ -17,6 +17,7 @@ public class AdminController {
 
     @Autowired
     private AdminBusinessService adminBusinessService;
+
     /*
     * This endpoint is used to delete a user from the Quora Application. Only an admin is authorized to access this endpoint.
     * It should be a DELETE request.
@@ -37,15 +38,17 @@ public class AdminController {
     public ResponseEntity<UserDeleteResponse> deleteUser(@RequestParam("userId") String userId, @RequestHeader("authorization") String accessToken) throws AuthorizationFailedException, UserNotFoundException {
         //Validating the access token
         UserAuthEntity validAuth = adminBusinessService.ValidateAccessToken(accessToken);
-        System.out.println(validAuth.getUser().getRole());
-        if(validAuth.getUser().getRole().equals("nonadmin")){
-            throw new AuthorizationFailedException("ATHR-003","Unauthorized Access, Entered user is not an admin");
+        //Validating if the user is admin or not
+        if (validAuth.getUser().getRole().equals("nonadmin")) {
+            throw new AuthorizationFailedException("ATHR-003", "Unauthorized Access, Entered user is not an admin");
         }
-        adminBusinessService.deleteUser(userId);
+        //Deleting the user
+        final String responseMessage = adminBusinessService.deleteUser(userId);
+        //Building the response
         UserDeleteResponse userResponse = new UserDeleteResponse();
         userResponse.setId(validAuth.getUuid());
-        userResponse.setStatus("USER SUCCESSFULLY DELETED");
-        return new ResponseEntity<UserDeleteResponse>(userResponse,HttpStatus.OK);
+        userResponse.setStatus(responseMessage);
+        return new ResponseEntity<UserDeleteResponse>(userResponse, HttpStatus.OK);
 
     }
 }

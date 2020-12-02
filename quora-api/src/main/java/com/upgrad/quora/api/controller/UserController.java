@@ -70,7 +70,8 @@ public class UserController {
         final String[] encrypt = cryptographyProvider.encrypt(signupUserRequest.getPassword());
         newUser.setSalt(encrypt[0]);
         newUser.setPassword(encrypt[1]);
-        UserEntity createdUser = userBusinessService.SignUp(newUser);
+        //Registering the user
+        UserEntity createdUser = userBusinessService.performSignUp(newUser);
         SignupUserResponse userResponse = new SignupUserResponse().id(createdUser.getUuid()).status("USER SUCCESSFULLY REGISTERED");
         return new ResponseEntity<SignupUserResponse>(userResponse, HttpStatus.CREATED);
     }
@@ -96,10 +97,13 @@ public class UserController {
      */
     @RequestMapping(method = RequestMethod.POST, path = "/user/signin", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<SigninResponse> userSignin(@RequestHeader("authorization") String authorization) throws AuthenticationFailedException {
+        //Formatting to get the username and password.
         byte[] decode = Base64.getDecoder().decode(authorization.split("Basic ")[1]);
         String decodedText = new String(decode);
         String[] decodedArray = decodedText.split(":");
-        UserAuthEntity userAuthEntity = userBusinessService.userSignin(decodedArray[0], decodedArray[1]);
+        //The username will be in array index 0 and password will be in array index 1
+        UserAuthEntity userAuthEntity = userBusinessService.PerformUserSignin(decodedArray[0], decodedArray[1]);
+        //Building the response
         SigninResponse userResponse = new SigninResponse();
         userResponse.setId(userAuthEntity.getUuid());
         userResponse.setMessage("SIGNED IN SUCCESSFULLY");
@@ -124,16 +128,17 @@ public class UserController {
 
     @RequestMapping(method = RequestMethod.POST, path = "/user/signout", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<SignoutResponse> userSignout(@RequestHeader("authorization") String accesstoken) throws SignUpRestrictedException {
-
-        UserAuthEntity userAuthEntity = userBusinessService.performSignOut(accesstoken);
+        //Signing out the user
+        UserAuthEntity userAuthEntity = userBusinessService.validateAccessToken(accesstoken);
+        //Updating the logout time
         userAuthEntity.setLogoutAt(ZonedDateTime.now());
-        userBusinessService.performUpdate(userAuthEntity);
+        userBusinessService.performSignOut(userAuthEntity);
+        //Building the response
         SignoutResponse userResponse = new SignoutResponse();
         userResponse.setId(userAuthEntity.getUuid());
         userResponse.setMessage("SIGNED OUT SUCCESSFULLY");
         return new ResponseEntity<SignoutResponse>(userResponse, HttpStatus.OK);
     }
-
 }
 
 

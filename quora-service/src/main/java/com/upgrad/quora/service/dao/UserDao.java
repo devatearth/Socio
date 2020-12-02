@@ -57,7 +57,7 @@ public class UserDao {
     }
 
     //This method will update the userAuthEntity
-    public void updateUserAuthEntity(UserAuthEntity userAuthEntity){
+    public void updateUserAuthEntity(UserAuthEntity userAuthEntity) {
         entityManager.merge(userAuthEntity);
     }
 
@@ -69,8 +69,9 @@ public class UserDao {
             return null;
         }
     }
+
     //This method will delete a user
-    public void deleteUser(UserEntity user){
+    public void deleteUser(UserEntity user) {
         entityManager.remove(user);
     }
 

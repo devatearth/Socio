@@ -32,7 +32,7 @@ public class UserBusinessService {
     @Return UserEntity
      */
     @Transactional
-    public UserEntity SignUp(UserEntity newUser) throws SignUpRestrictedException {
+    public UserEntity performSignUp(UserEntity newUser) throws SignUpRestrictedException {
         if (userDao.getUserByUserName(newUser.getUserName()) != null) {
             throw new SignUpRestrictedException("SGR-001", "Try any other Username, this Username has already been taken");
         } else if (userDao.getUserByEmail(newUser.getEmail()) != null) {
@@ -43,9 +43,13 @@ public class UserBusinessService {
 
     }
 
+    /*This method will signout the user
+    @Parm - accessToken
+     */
+
     @Transactional
-    public UserAuthEntity performSignOut(String authorization) throws SignUpRestrictedException {
-        UserAuthEntity userAuthEntity = userDao.getUserAuthEntityByAccessToken(authorization);
+    public UserAuthEntity validateAccessToken(String accessToken) throws SignUpRestrictedException {
+        UserAuthEntity userAuthEntity = userDao.getUserAuthEntityByAccessToken(accessToken);
         if (userAuthEntity == null) {
             throw new SignUpRestrictedException("SGR-001", "User is not Signed in");
         } else {
@@ -54,7 +58,7 @@ public class UserBusinessService {
     }
 
     @Transactional
-    public void performUpdate(UserAuthEntity userAuthEntity) {
+    public void performSignOut(UserAuthEntity userAuthEntity) {
         userDao.updateUserAuthEntity(userAuthEntity);
     }
 
@@ -65,7 +69,7 @@ public class UserBusinessService {
     respective task.
      */
     @Transactional
-    public UserAuthEntity userSignin(String userName, String passWord) throws AuthenticationFailedException {
+    public UserAuthEntity PerformUserSignin(String userName, String passWord) throws AuthenticationFailedException {
         UserEntity user = userDao.getUserByUserName(userName);
         if (user == null) {
             throw new AuthenticationFailedException("ATH-001", "This username does not exist");

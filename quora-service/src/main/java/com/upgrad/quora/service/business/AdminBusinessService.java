@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.ZonedDateTime;
 
+//This class is implemented as AdminBusinessService class
 @Service
 public class AdminBusinessService {
 
@@ -18,31 +19,39 @@ public class AdminBusinessService {
     @Autowired
     private UserDao userDao;
 
+    /*This method will validate the access token
+    @Parm -accessToken
+    @Return - UserAuthEntity
+     */
     @Transactional
     public UserAuthEntity ValidateAccessToken(String accessToken) throws AuthorizationFailedException {
         UserAuthEntity userAuthEntity = userDao.getUserAuthEntityByAccessToken(accessToken);
-        if(userAuthEntity == null){
-            throw new AuthorizationFailedException("ATHR-001","User has not signed in");
+        if (userAuthEntity == null) {
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
         }
         System.out.println(userAuthEntity.getUuid());
-        if(userAuthEntity.getLogoutAt() == null){
+        if (userAuthEntity.getLogoutAt() == null) {
 
-            return  userAuthEntity;
+            return userAuthEntity;
         }
         int difference = userAuthEntity.getLogoutAt().compareTo(ZonedDateTime.now());
-        if(difference <  0){
-            throw new AuthorizationFailedException("ATHR-002","User is signed out");
+        if (difference < 0) {
+            throw new AuthorizationFailedException("ATHR-002", "User is signed out");
         }
 
         return userAuthEntity;
     }
 
+    /*This method will delete the user
+    @Parm - userId
+    */
     @Transactional
-    public void deleteUser(String userId) throws UserNotFoundException {
+    public String deleteUser(String userId) throws UserNotFoundException {
         UserEntity user = userDao.getUserByUserId(userId);
-        if(user == null){
-            throw new UserNotFoundException("USR-001","User with entered uuid to be deleted does not exist");
+        if (user == null) {
+            throw new UserNotFoundException("USR-001", "User with entered uuid to be deleted does not exist");
         }
         userDao.deleteUser(user);
+        return "USER SUCCESSFULLY DELETED";
     }
 }

@@ -41,6 +41,7 @@ public class CommonController {
 
         //Getting the user details
         UserEntity user = commonBusinessService.getUserByUserId(userId);
+        //Generating the response
         UserDetailsResponse userResponse = new UserDetailsResponse();
         userResponse.aboutMe(user.getAboutMe()).contactNumber(user.getContactNumber())
                 .country(user.getCountry()).dob(user.getDob()).emailAddress(user.getEmail())
