@@ -5,10 +5,13 @@ import com.upgrad.quora.api.model.SignoutResponse;
 import com.upgrad.quora.api.model.SignupUserRequest;
 import com.upgrad.quora.api.model.SignupUserResponse;
 import com.upgrad.quora.service.business.PasswordCryptographyProvider;
-import com.upgrad.quora.service.business.UserBusinessService;
+import com.upgrad.quora.service.business.SignInBusinessService;
+import com.upgrad.quora.service.business.SignOutBusinessService;
+import com.upgrad.quora.service.business.SignUpBusinessService;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthenticationFailedException;
+import com.upgrad.quora.service.exception.SignOutRestrictedException;
 import com.upgrad.quora.service.exception.SignUpRestrictedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -29,7 +32,15 @@ public class UserController {
 
     //Creating an instance of SignupBusinessService to help with SignUp logic
     @Autowired
-    private UserBusinessService userBusinessService;
+    private SignUpBusinessService signUpBusinessService;
+
+    //Creating an instance of SignInBusinessService to help with signIn logic
+    @Autowired
+    private SignInBusinessService signInBusinessService;
+
+    //Creating an instance of SignOutBusinessService to help with SignOut logic
+    @Autowired
+    private SignOutBusinessService signOutBusinessService;
 
     //Creating an instance of PasswordCryptographyProvider to help with encryption of password
     @Autowired
@@ -71,7 +82,7 @@ public class UserController {
         newUser.setSalt(encrypt[0]);
         newUser.setPassword(encrypt[1]);
         //Registering the user
-        UserEntity createdUser = userBusinessService.performSignUp(newUser);
+        UserEntity createdUser = signUpBusinessService.performSignUp(newUser);
         SignupUserResponse userResponse = new SignupUserResponse().id(createdUser.getUuid()).status("USER SUCCESSFULLY REGISTERED");
         return new ResponseEntity<SignupUserResponse>(userResponse, HttpStatus.CREATED);
     }
@@ -102,7 +113,7 @@ public class UserController {
         String decodedText = new String(decode);
         String[] decodedArray = decodedText.split(":");
         //The username will be in array index 0 and password will be in array index 1
-        UserAuthEntity userAuthEntity = userBusinessService.PerformUserSignin(decodedArray[0], decodedArray[1]);
+        UserAuthEntity userAuthEntity = signInBusinessService.PerformUserSignIn(decodedArray[0], decodedArray[1]);
         //Building the response
         SigninResponse userResponse = new SigninResponse();
         userResponse.setId(userAuthEntity.getUuid());
@@ -127,12 +138,12 @@ public class UserController {
      */
 
     @RequestMapping(method = RequestMethod.POST, path = "/user/signout", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<SignoutResponse> userSignout(@RequestHeader("authorization") String accesstoken) throws SignUpRestrictedException {
+    public ResponseEntity<SignoutResponse> userSignOut(@RequestHeader("authorization") String accesstoken) throws  SignOutRestrictedException {
         //Signing out the user
-        UserAuthEntity userAuthEntity = userBusinessService.validateAccessToken(accesstoken);
+        UserAuthEntity userAuthEntity = signOutBusinessService.validateAccessToken(accesstoken);
         //Updating the logout time
         userAuthEntity.setLogoutAt(ZonedDateTime.now());
-        userBusinessService.performSignOut(userAuthEntity);
+        signOutBusinessService.performSignOut(userAuthEntity);
         //Building the response
         SignoutResponse userResponse = new SignoutResponse();
         userResponse.setId(userAuthEntity.getUuid());
