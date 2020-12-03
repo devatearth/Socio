@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 
 /*
 This class implements the access to DB
@@ -22,6 +23,15 @@ public class UserDao {
         try {
             return entityManager.createNamedQuery("getUserByUserName", UserEntity.class).setParameter("userName", userName).getSingleResult();
         } catch (Exception e) {
+            return null;
+        }
+    }
+
+    //Added by @github.com/vetrivel-muthusamy
+    public UserAuthEntity getUserByAuthtoken(final String accessToken) {
+        try {
+            return entityManager.createNamedQuery("getUserAuthByAccessToken", UserAuthEntity.class).setParameter("accessToken", accessToken).getSingleResult();
+        } catch (NoResultException nre) {
             return null;
         }
     }
@@ -48,6 +58,16 @@ public class UserDao {
         try {
             return entityManager.createNamedQuery("getUserByUserId", UserEntity.class).setParameter("userId", userId).getSingleResult();
         } catch (Exception e) {
+            return null;
+        }
+    }
+
+    //Added by @github.com/vetrivel-muthusamy :
+    public UserEntity getUserFromUuid(final String userId) {
+        try {
+            return entityManager.createNamedQuery("userByUuid", UserEntity.class).setParameter("uuid", userId).getSingleResult();
+
+        } catch (NoResultException nre) {
             return null;
         }
     }
