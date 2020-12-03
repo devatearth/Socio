@@ -10,6 +10,9 @@ import java.time.ZonedDateTime;
 @Table(name = "question")
 @NamedQueries({
         @NamedQuery(name = "getAllQuestions",query = "Select u from QuestionEntitiy u"),
+        //Added by @github.com/vetrivel-muthusamy
+        @NamedQuery(name = "getQuestionByUuid", query = "select u from QuestionEntitiy u where u.uuid=:uuid"),
+        @NamedQuery(name = "getQuestionById", query = "select u from QuestionEntitiy u where u.userId=:user"),
 })
 public class QuestionEntitiy {
 
