@@ -1,5 +1,6 @@
 package com.upgrad.quora.service.business;
 
+import com.upgrad.quora.service.dao.UserAuthDao;
 import com.upgrad.quora.service.dao.UserDao;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.exception.SignOutRestrictedException;
@@ -18,13 +19,16 @@ public class SignOutBusinessService {
     @Autowired
     private UserDao userDao;
 
+    //Creating an instance to access DB
+    @Autowired
+    private UserAuthDao userAuthDao;
     /*This method will signout the user
     @Parm - accessToken
      */
 
     @Transactional
     public UserAuthEntity validateAccessToken(String accessToken) throws SignOutRestrictedException {
-        UserAuthEntity userAuthEntity = userDao.getUserAuthEntityByAccessToken(accessToken);
+        UserAuthEntity userAuthEntity = userAuthDao.getUserAuthEntityByAccessToken(accessToken);
         if (userAuthEntity == null) {
             throw new SignOutRestrictedException("SGR-001", "User is not Signed in");
         } else {
@@ -34,6 +38,6 @@ public class SignOutBusinessService {
 
     @Transactional
     public void performSignOut(UserAuthEntity userAuthEntity) {
-        userDao.updateUserAuthEntity(userAuthEntity);
+        userAuthDao.updateUserAuthEntity(userAuthEntity);
     }
 }
