@@ -62,6 +62,16 @@ public class UserDao {
         }
     }
 
+    public UserEntity getUserByUuid(final String uuid) {
+        try {
+            return entityManager.createNamedQuery("userByUuid", UserEntity.class).setParameter("uuid", uuid).getSingleResult();
+        } catch (NoResultException nre) {
+
+            return null;
+        }
+
+    }
+
     //Added by @github.com/vetrivel-muthusamy :
     public UserEntity getUserFromUuid(final String userId) {
         try {
