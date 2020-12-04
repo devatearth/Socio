@@ -24,14 +24,14 @@ import java.util.List;
 @RequestMapping("/")
 public class AnswerController {
 
-    //Added by @github.com/vetrivel-muthusamy: Method to create an Answer
+
     @Autowired
     private CreateAnswerService createAnswerService;
     @RequestMapping(method = RequestMethod.POST, path = "/question/{questionId}/answer/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<AnswerResponse> createAnswer(@RequestHeader("authorization") final String authorization, final AnswerRequest answerRequest, @PathVariable("questionId") final String questionId) throws AuthorizationFailedException, InvalidQuestionException {
+    public ResponseEntity<AnswerResponse> createAnswer(AnswerRequest answerRequest, @PathVariable("questionId") final String questionId, @RequestHeader("authorization") final String authorization) throws AuthorizationFailedException, InvalidQuestionException {
         AnswerEntity answerEntity = new AnswerEntity();
-        answerEntity.setAnswer(answerRequest.getAnswer());
-        answerEntity = createAnswerService.createAnswer(authorization, answerEntity, questionId);
+        //answerEntity.setAnswer(answerRequest.getAnswer());
+        answerEntity = createAnswerService.createAnswer(answerRequest.getAnswer(),questionId,authorization);
         AnswerResponse answerResponse = new AnswerResponse().id(answerEntity.getUuid()).status("ANSWER CREATED");
         return new ResponseEntity<AnswerResponse>(answerResponse, HttpStatus.CREATED);
     }

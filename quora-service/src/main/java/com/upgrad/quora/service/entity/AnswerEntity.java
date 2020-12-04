@@ -39,6 +39,10 @@ public class AnswerEntity {
     @Size(max = 255)
     private String answer;
 
+
+    //user_id column will contain the user who posted the question
+
+
     //Modified & Added by @github.com/vetrivel-muthusamy: date column will contain the date
     @JoinColumn(name = "date")
     @NotNull
@@ -109,6 +113,9 @@ public class AnswerEntity {
     public void setAnswer(String answer) {
         this.answer = answer;
     }
+
+
+
 
     //public Timestamp getDate() { return date;}
 

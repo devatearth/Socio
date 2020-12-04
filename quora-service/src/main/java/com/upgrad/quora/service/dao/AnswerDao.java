@@ -2,6 +2,7 @@ package com.upgrad.quora.service.dao;
 
 import com.upgrad.quora.service.entity.AnswerEntity;
 import com.upgrad.quora.service.entity.QuestionEntitiy;
+import com.upgrad.quora.service.entity.UserAuthEntity;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -15,6 +16,25 @@ public class AnswerDao {
 
     @PersistenceContext
     private EntityManager entityManager;
+
+    public UserAuthEntity getUserAuthToken(final String accessToken){
+        try {
+            return entityManager.createNamedQuery("getUserAuthByAccessToken",
+                    UserAuthEntity.class).setParameter("accessToken", accessToken).getSingleResult();
+        } catch (NoResultException nre){
+            return null;
+        }
+    }
+
+    public QuestionEntitiy getQuestion(final String questionId) {
+        try {
+            return entityManager.createNamedQuery("getQuestionByUuid", QuestionEntitiy.class).setParameter("uuid", questionId)
+                    .getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
 
 
     public AnswerEntity getAnswerFromUuid(final String answerUuId) {

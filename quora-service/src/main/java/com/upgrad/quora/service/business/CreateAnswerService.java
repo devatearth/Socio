@@ -39,8 +39,47 @@ public class CreateAnswerService {
      which is to be answered in the database and access token of the signed in user as a string in authorization Request Header.
      */
 
-    public AnswerEntity createAnswer(final String authorization, final AnswerEntity answerEntity, String questionId) throws AuthorizationFailedException, InvalidQuestionException {
+    public AnswerEntity createAnswer(final String answer, final String questionId,final String accessToken) throws AuthorizationFailedException, InvalidQuestionException {
 
+        UserAuthEntity userAuthEntity = answerDao.getUserAuthToken(accessToken);
+        QuestionEntitiy questionEntity = answerDao.getQuestion(questionId);
+        AnswerEntity answerEntity = new AnswerEntity();
+        if(questionEntity == null){
+            throw new InvalidQuestionException(
+                    "QUES-001", "The question entered is invalid");
+        }
+
+        if (userAuthEntity.getLogoutAt() == null) {
+
+
+            answerEntity.setUser(userAuthEntity.getUser());
+            answerEntity.setUuid(UUID.randomUUID().toString());
+            answerEntity.setQuestion(questionEntity);
+            answerEntity.setDate(ZonedDateTime.now());
+            answerEntity.setAnswer(answer);
+            return answerDao.createAnswer(answerEntity);
+        }
+        int difference = userAuthEntity.getLogoutAt().compareTo(ZonedDateTime.now());
+
+        if (userAuthEntity == null) {
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        } else if (difference < 0) {
+            throw new AuthorizationFailedException(
+                    "ATHR-002", "User is signed out.Sign in first to post an answer");
+        }
+
+
+        answerEntity.setUser(userAuthEntity.getUser());
+        answerEntity.setUuid(UUID.randomUUID().toString());
+        answerEntity.setQuestion(questionEntity);
+        answerEntity.setDate(ZonedDateTime.now());
+        answerEntity.setAnswer(answer);
+        return answerDao.createAnswer(answerEntity);
+
+
+    }
+
+        /*
         UserAuthEntity userAuthEntity = userDao.getUserByAuthtoken(authorization);
         QuestionEntitiy questionEntity = questionDao.getQuestionFromUuid(questionId);
 
@@ -67,4 +106,8 @@ public class CreateAnswerService {
         answerDao.createAnswer(answerEntity);
         return answerEntity;
     }
+
+         */
+
+
 }
