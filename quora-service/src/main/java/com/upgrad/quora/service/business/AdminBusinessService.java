@@ -20,35 +20,24 @@ public class AdminBusinessService {
     @Autowired
     private UserDao userDao;
 
-    //Creating an instance to access DB
+    //Creating a bean to use the feature of authorization
     @Autowired
-    private UserAuthDao userAuthDao;
-    /*This method will validate the access token
-    @Parm -accessToken
-    @Return - UserAuthEntity
-     */
+    private AuthorizationBusinessService authorizationBusinessService;
+
+    /*This method will validate the access token */
     @Transactional
     public UserAuthEntity ValidateAccessToken(String accessToken) throws AuthorizationFailedException {
-        UserAuthEntity userAuthEntity = userAuthDao.getUserAuthEntityByAccessToken(accessToken);
-        if (userAuthEntity == null) {
-            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        UserAuthEntity userAuthEntity = authorizationBusinessService.ValidateAccessToken(accessToken);
+        if (userAuthEntity.getLogoutAt() != null) {
+            int difference = userAuthEntity.getLogoutAt().compareTo(ZonedDateTime.now());
+            if (difference < 0) {
+                throw new AuthorizationFailedException("ATHR-002", "User is signed out");
+            }
         }
-        System.out.println(userAuthEntity.getUuid());
-        if (userAuthEntity.getLogoutAt() == null) {
-
-            return userAuthEntity;
-        }
-        int difference = userAuthEntity.getLogoutAt().compareTo(ZonedDateTime.now());
-        if (difference < 0) {
-            throw new AuthorizationFailedException("ATHR-002", "User is signed out");
-        }
-
         return userAuthEntity;
     }
 
-    /*This method will delete the user
-    @Parm - userId
-    */
+    /*This method will delete the user*/
     @Transactional
     public String deleteUser(String userId) throws UserNotFoundException {
         UserEntity user = userDao.getUserByUserId(userId);

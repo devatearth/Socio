@@ -27,15 +27,6 @@ public class UserDao {
         }
     }
 
-    //Added by @github.com/vetrivel-muthusamy
-    public UserAuthEntity getUserByAuthtoken(final String accessToken) {
-        try {
-            return entityManager.createNamedQuery("getUserAuthByAccessToken", UserAuthEntity.class).setParameter("accessToken", accessToken).getSingleResult();
-        } catch (NoResultException nre) {
-            return null;
-        }
-    }
-
     //This method will take the email as input and returns the User object, If exists in DB else returns null.
     public UserEntity getUserByEmail(String email) {
         try {

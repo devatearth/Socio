@@ -57,4 +57,12 @@ public class RestExceptionHandler {
     public ResponseEntity<ErrorResponse> AnswerNotFoundException(AnswerNotFoundException sre, WebRequest request){
         return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(sre.getCode()).message(sre.getErrorMessage()), HttpStatus.UNAUTHORIZED);
     }
+
+    //Exception method for UserNotFoundException class
+    @ExceptionHandler(InvalidQuestionException.class)
+    public ResponseEntity<ErrorResponse> invalidQuestionException(InvalidQuestionException exc, WebRequest request) {
+        return new ResponseEntity<ErrorResponse>(
+                new ErrorResponse().code(exc.getCode()).message(exc.getErrorMessage()), HttpStatus.NOT_FOUND
+        );
+    }
 }

@@ -39,27 +39,12 @@ public class AnswerEntity {
     @Size(max = 255)
     private String answer;
 
-
-    //user_id column will contain the user who posted the question
-
-
     //Modified & Added by @github.com/vetrivel-muthusamy: date column will contain the date
-    @JoinColumn(name = "date")
+    @Column(name = "date")
     @NotNull
     private ZonedDateTime date;
-    public ZonedDateTime getDate() {
-        return date;
-    }
-    public void setDate(ZonedDateTime date) {
-        this.date = date;
-    }
 
-
-    //user_id column will contain user-id who the answer belongs to.
-    //@Column(name = "user_id")
-    //private Integer userId;
-
-    //quertion_id column will contain the question ID.
+   //quertion_id column will contain the question ID.
     //Modified by @github.com/vetrivel-muthusamy
     @ManyToOne
     @JoinColumn(name = "question_id")
@@ -98,10 +83,12 @@ public class AnswerEntity {
     @JoinColumn(name = "user_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private UserEntity user;
+
     //Added by @github.com/vetrivel-muthusamy
     public UserEntity getUser() {
         return user;
     }
+
     public void setUser(UserEntity user) {
         this.user = user;
     }
@@ -115,17 +102,11 @@ public class AnswerEntity {
     }
 
 
+    public ZonedDateTime getDate() {
+        return date;
+    }
 
-
-    //public Timestamp getDate() { return date;}
-
-    //public void setDate(Timestamp date) { this.date = date; }
-
-    //public Integer getUserId() {return userId;}
-
-    //public void setUserId(Integer userId) {    this.userId = userId; }
-
-    //public Integer getQuestionId() { return questionId;}
-
-    //public void setQuestionId(Integer questionId) { this.questionId = questionId;}
+    public void setDate(ZonedDateTime date) {
+        this.date = date;
+    }
 }

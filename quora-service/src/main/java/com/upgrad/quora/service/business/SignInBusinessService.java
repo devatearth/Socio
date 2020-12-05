@@ -28,6 +28,7 @@ public class SignInBusinessService {
     //Creating an instance to access DB
     @Autowired
     private UserAuthDao userAuthDao;
+
     /*
 
     @parm userName,passWord
@@ -52,7 +53,6 @@ public class SignInBusinessService {
             userAuthTokenEntity.setAccessToken(jwtTokenProvider.generateToken(user.getUuid(), now, expiresAt));
             userAuthTokenEntity.setLoginAt(now);
             userAuthTokenEntity.setExpiresAt(expiresAt);
-
             userAuthDao.createAuthToken(userAuthTokenEntity);
             return userAuthTokenEntity;
         } else {

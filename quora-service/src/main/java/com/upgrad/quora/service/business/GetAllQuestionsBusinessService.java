@@ -31,15 +31,12 @@ public class GetAllQuestionsBusinessService {
     @Transactional
     public UserAuthEntity performAuthTokenValidation(String authToken) throws AuthorizationFailedException {
         UserAuthEntity userAuthEntity = userAuthDao.getUserAuthEntityByAccessToken(authToken);
-        if(userAuthEntity == null){
-            throw new AuthorizationFailedException("ATHR-001","User has not signed in");
-        }
-        if (userAuthEntity.getLogoutAt() == null) {
-            return userAuthEntity;
-        }
-        int difference = userAuthEntity.getLogoutAt().compareTo(ZonedDateTime.now());
-        if (difference < 0) {
-            throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to get all questions");
+
+        if (userAuthEntity.getLogoutAt() != null) {
+            int difference = userAuthEntity.getLogoutAt().compareTo(ZonedDateTime.now());
+            if (difference < 0) {
+                throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to get all questions");
+            }
         }
         return userAuthEntity;
     }

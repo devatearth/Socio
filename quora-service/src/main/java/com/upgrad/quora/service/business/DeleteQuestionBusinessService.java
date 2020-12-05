@@ -22,22 +22,21 @@ public class DeleteQuestionBusinessService {
     @Autowired
     private QuestionDao questionDao;
 
+    //Creating a bean to use the feature of authorization
+    @Autowired
+    private AuthorizationBusinessService authorizationBusinessService;
+
     @Transactional(propagation = Propagation.REQUIRED)
     public void userQuestionDelete(final String questionId, final String authorization) throws InvalidQuestionException, AuthorizationFailedException {
-        UserAuthEntity userAuthEntity = userDao.getUserByAuthtoken(authorization);
+        UserAuthEntity userAuthEntity = authorizationBusinessService.ValidateAccessToken(authorization);
         QuestionEntitiy questionEntitiy = new QuestionEntitiy();
 
-        // Validate if user is signed in or not &  Validate if user has signed out in else if
-
-        int difference = userAuthEntity.getLogoutAt().compareTo(ZonedDateTime.now());
-
-        if (userAuthEntity == null) {
-            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
-        } else if (difference < 0) {
-            throw new AuthorizationFailedException(
-                    "ATHR-002", "User is signed out.Sign in first to delete a question");
+        if (userAuthEntity.getLogoutAt() != null) {
+            int difference = userAuthEntity.getLogoutAt().compareTo(ZonedDateTime.now());
+            if (difference < 0) {
+                throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to delete a question");
+            }
         }
-
 
         // Validate if requested question exist or not
         if (questionDao.getQuestionByQUuid(questionId) == null) {
@@ -45,7 +44,8 @@ public class DeleteQuestionBusinessService {
         }
 
         // Validate if current user is the owner of requested question or the role of user is not nonadmin
-        if (!userAuthEntity.getUser().getUuid().equals(questionDao.getQuestionByQUuid(questionEntitiy.getUuid()))) {
+        QuestionEntitiy question = questionDao.getQuestionByQUuid(questionId);
+        if (!userAuthEntity.getUser().getUuid().equals(question.getUserId().getUuid())) {
             if (userAuthEntity.getUser().getRole().equals("nonadmin")) {
                 throw new AuthorizationFailedException("ATHR-003", "Only the question owner or admin can delete the question");
             }

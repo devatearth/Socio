@@ -52,14 +52,10 @@ public class UserController {
     * This endpoint is used to register a new user in the Quora Application.
     * It should be a POST request
     * This endpoint requests for all the attributes in 'SignupUserRequest' about the user.
-    * If the username provided already exists in the current database, throw ‘SignUpRestrictedException’ with the message
-      code -'SGR-001' and message - 'Try any other Username, this Username has already been taken'.
-    * If the email Id provided by the user already exists in the current database, throw ‘SignUpRestrictedException’ with
-      the message code -'SGR-002' and message -'This user has already been registered, try with any other emailId'.
-    * If the information is provided by a non-existing user, then save the user information in the database and return the
-      'uuid' of the registered user and message 'USER SUCCESSFULLY REGISTERED' in the JSON response with the corresponding
-      HTTP status. Also, make sure to save the password after encrypting it using 'PasswordCryptographyProvider' class given
-      in the stub file.
+    * If the username provided already exists in the current database, throw ‘SignUpRestrictedException’ with the message code -'SGR-001' and message - 'Try any other Username, this Username has already been taken'.
+    * If the email Id provided by the user already exists in the current database, throw ‘SignUpRestrictedException’ with the message code -'SGR-002' and message -'This user has already been registered, try with any other emailId'.
+    * If the information is provided by a non-existing user, then save the user information in the database and return the 'uuid' of the registered user and message 'USER SUCCESSFULLY REGISTERED' in the JSON response with the corresponding
+      HTTP status. Also, make sure to save the password after encrypting it using 'PasswordCryptographyProvider' class given in the stub file.
     * Also, when a user signs up using this endpoint then the role of the person will be 'nonadmin' by default.
       You can add users with 'admin' role only by executing database queries or with pgAdmin.
       * @Return ResponseEntity<SigninResponse>

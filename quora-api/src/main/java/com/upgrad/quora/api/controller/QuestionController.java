@@ -64,7 +64,7 @@ public class QuestionController {
         questionEntitiy.setContent(question.getContent());
         questionEntitiy.setDate(ZonedDateTime.now());
         questionEntitiy.setUuid(UUID.randomUUID().toString());
-        questionEntitiy.setUserId(isValidRequestor.getUser().getId());
+        questionEntitiy.setUserId(isValidRequestor.getUser());
         QuestionEntitiy persistedQuestion = createQuestionBusinessService.createQuestion(questionEntitiy);
 
         /* 3. finally send the response back to the client side */
