@@ -12,12 +12,12 @@ import java.time.ZonedDateTime;
 @Entity
 @Table(name = "question")
 @NamedQueries({
-        @NamedQuery(name = "getAllQuestions",query = "Select u from QuestionEntitiy u"),
+        @NamedQuery(name = "getAllQuestions", query = "Select u from QuestionEntitiy u"),
         //Added by @github.com/vetrivel-muthusamy
         @NamedQuery(name = "getQuestionByUuid", query = "select u from QuestionEntitiy u where u.uuid=:uuid"),
         @NamedQuery(name = "getQuestionById", query = "select u from QuestionEntitiy u where u.user=:user"),
         @NamedQuery(name = "questionByQUuid", query = "select q from QuestionEntitiy q where q.uuid =:uuid"),
-       // @NamedQuery(name= "allQuestionsByUserId",query = "select qe from QuestionEntitiy qe inner join qe.user usr where usr.uuid = :uuid"),
+        // @NamedQuery(name= "allQuestionsByUserId",query = "select qe from QuestionEntitiy qe inner join qe.user usr where usr.uuid = :uuid"),
 })
 public class QuestionEntitiy {
 

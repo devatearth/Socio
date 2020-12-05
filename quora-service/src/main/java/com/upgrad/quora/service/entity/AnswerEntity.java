@@ -44,7 +44,7 @@ public class AnswerEntity {
     @NotNull
     private ZonedDateTime date;
 
-   //quertion_id column will contain the question ID.
+    //quertion_id column will contain the question ID.
     //Modified by @github.com/vetrivel-muthusamy
     @ManyToOne
     @JoinColumn(name = "question_id")

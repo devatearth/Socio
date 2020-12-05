@@ -27,10 +27,13 @@ public class GetAllQuestionsBusinessService {
     //Creating an instance to access DB
     @Autowired
     private QuestionDao questionDao;
+    //Creating a bean to use the feature of authorization
+    @Autowired
+    private AuthorizationBusinessService authorizationBusinessService;
 
     @Transactional
     public UserAuthEntity performAuthTokenValidation(String authToken) throws AuthorizationFailedException {
-        UserAuthEntity userAuthEntity = userAuthDao.getUserAuthEntityByAccessToken(authToken);
+        UserAuthEntity userAuthEntity = authorizationBusinessService.ValidateAccessToken(authToken);
 
         if (userAuthEntity.getLogoutAt() != null) {
             int difference = userAuthEntity.getLogoutAt().compareTo(ZonedDateTime.now());

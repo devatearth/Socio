@@ -45,7 +45,7 @@ public class CreateAnswerService {
      which is to be answered in the database and access token of the signed in user as a string in authorization Request Header.
      */
 
-    public AnswerEntity createAnswer(final String answer, final String questionId,final String accessToken) throws AuthorizationFailedException, InvalidQuestionException {
+    public AnswerEntity createAnswer(final String answer, final String questionId, final String accessToken) throws AuthorizationFailedException, InvalidQuestionException {
 
         UserAuthEntity userAuthEntity = authorizationBusinessService.ValidateAccessToken(accessToken);
         QuestionEntitiy questionEntity = questionDao.getQuestionByQUuid(questionId);
@@ -57,7 +57,7 @@ public class CreateAnswerService {
                         "ATHR-002", "User is signed out.Sign in first to post an answer");
             }
         }
-        if(questionEntity == null){
+        if (questionEntity == null) {
             throw new InvalidQuestionException(
                     "QUES-001", "The question entered is invalid");
         }

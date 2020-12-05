@@ -54,8 +54,8 @@ public class RestExceptionHandler {
     //@github.com/vetrivel-muthusamy
     //Exception method for AnswerNotFoundException class
     @ExceptionHandler(AnswerNotFoundException.class)
-    public ResponseEntity<ErrorResponse> AnswerNotFoundException(AnswerNotFoundException sre, WebRequest request){
-        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(sre.getCode()).message(sre.getErrorMessage()), HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<ErrorResponse> AnswerNotFoundException(AnswerNotFoundException sre, WebRequest request) {
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(sre.getCode()).message(sre.getErrorMessage()), HttpStatus.NOT_FOUND);
     }
 
     //Exception method for UserNotFoundException class

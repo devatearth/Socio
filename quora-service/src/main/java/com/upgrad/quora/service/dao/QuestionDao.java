@@ -16,13 +16,13 @@ public class QuestionDao {
     private EntityManager entityManager;
 
     //Create a qusestion
-    public QuestionEntitiy createQuestion(QuestionEntitiy questionEntitiy){
-            entityManager.persist(questionEntitiy);
-            return questionEntitiy;
+    public QuestionEntitiy createQuestion(QuestionEntitiy questionEntitiy) {
+        entityManager.persist(questionEntitiy);
+        return questionEntitiy;
     }
 
     public List<QuestionEntitiy> getAllQuestions() {
-        return entityManager.createNamedQuery("getAllQuestions",QuestionEntitiy.class).getResultList();
+        return entityManager.createNamedQuery("getAllQuestions", QuestionEntitiy.class).getResultList();
     }
 
     //Added by @github.com/vetrivel-muthusamy
@@ -54,9 +54,9 @@ public class QuestionDao {
         entityManager.remove(questionEntity);
     }
 
-    public List < QuestionEntitiy > getAllQuestionsByUser(final String uuid) {
+    public List<QuestionEntitiy> getAllQuestionsByUser(final String uuid) {
         try {
-            return entityManager.createNamedQuery("getAllQuestions",QuestionEntitiy.class).getResultList();
+            return entityManager.createNamedQuery("getAllQuestions", QuestionEntitiy.class).getResultList();
         } catch (NoResultException nre) {
             return null;
         }

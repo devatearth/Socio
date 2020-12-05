@@ -18,6 +18,11 @@ public class AuthorizationBusinessService {
     //This Method will fetch the UserAuthEntity From the DB by using the accessToken
     @Transactional
     public UserAuthEntity ValidateAccessToken(String  accessToken) throws AuthorizationFailedException {
+        try {
+            accessToken = accessToken.split("Bearer ")[1];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            //Exception occurred
+        }
         UserAuthEntity userAuthEntity = userAuthDao.getUserAuthEntityByAccessToken(accessToken);
         if(userAuthEntity == null){
             throw new AuthorizationFailedException("ATHR-001", "User has not signed in");

@@ -40,9 +40,9 @@ public class CreateQuestionBusinessService {
         return userAuthEntity;
     }
 
-        @Transactional
-        public QuestionEntitiy createQuestion (QuestionEntitiy questionEntitiy){
-            QuestionEntitiy question = questionDao.createQuestion(questionEntitiy);
-            return question;
-        }
+    @Transactional
+    public QuestionEntitiy createQuestion(QuestionEntitiy questionEntitiy) {
+        QuestionEntitiy question = questionDao.createQuestion(questionEntitiy);
+        return question;
     }
+}
