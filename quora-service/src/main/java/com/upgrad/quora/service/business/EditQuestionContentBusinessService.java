@@ -46,9 +46,8 @@ public class EditQuestionContentBusinessService {
 
         // Validate if current user is the owner of requested question
         UserEntity currentUser = userAuthEntity.getUser();
-        QuestionEntitiy questionownerr = questionDao.getQuestionByQUuid(questionEntity.getUuid());
         //UserEntity questionOwner = questionDao.getQuestionByQUuid(questionEntity.getUuid()).getUser();
-        if (currentUser.getId() != questionownerr.getId()) {
+        if (currentUser.getUuid() != existingQuestionEntity.getUserId().getUuid()) {
             throw new AuthorizationFailedException("ATHR-003", "Only the question owner can edit the question");
         }
 
