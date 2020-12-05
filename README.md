@@ -5,29 +5,29 @@ The Projects follows the below structure:
 
 :star: 1. quora-api
 
-config - This directory must consist of all the required configuration files of the project (if any). 
+:one: config - This directory must consist of all the required configuration files of the project (if any). 
 
-controller - This directory must consist of all the controller classes required for the project.
+:two: controller - This directory must consist of all the controller classes required for the project.
 
-exception - This directory must consist of the exception handlers for all the exceptions. 
+:three: exception - This directory must consist of the exception handlers for all the exceptions. 
 
-endpoints - This directory consists of the JSON files which are used to generate the Request and Response models.
+:four: endpoints - This directory consists of the JSON files which are used to generate the Request and Response models.
 
-test - This directory consists of tests for all the controller classes.  
+:five: test - This directory consists of tests for all the controller classes.  
 
 :star: 2. quora-db
 
-config - This directory consists of the database properties and environment properties for local development.
+:one: config - This directory consists of the database properties and environment properties for local development.
 
-sql - This directory consists of all the SQL queries to create database schema tables.
+:two: sql - This directory consists of all the SQL queries to create database schema tables.
  
 
 :star: 3. quora-service
 
-business - This directory must consist of all the implementations of the business logic of the application.
+:one: business - This directory must consist of all the implementations of the business logic of the application.
 
-dao - This directory allows us to isolate the application/business layer from the persistence layer and must consist of the implementation of all the data access object classes.
+:two: dao - This directory allows us to isolate the application/business layer from the persistence layer and must consist of the implementation of all the data access object classes.
 
-entity - This directory must consist of all the entity classes related to the project to map these class objects with the database. 
+:three:entity - This directory must consist of all the entity classes related to the project to map these class objects with the database. 
 
-exception - This directory consists of all the exceptions related to the project.
+:four: exception - This directory consists of all the exceptions related to the project.
