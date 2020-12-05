@@ -21,6 +21,7 @@ public class CommonController {
     private CommonBusinessService commonBusinessService;
 
     /*
+    -> userProfile - "/userprofile/{userId}"
     * This endpoint is used to get the details of any user in the Quora Application. This endpoint can be accessed by
       any user in the application.
     * It should be a GET request

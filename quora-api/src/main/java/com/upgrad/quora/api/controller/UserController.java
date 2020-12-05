@@ -47,6 +47,8 @@ public class UserController {
     private PasswordCryptographyProvider cryptographyProvider;
 
     /*
+    -> signup - "/user/signup"
+
     * This endpoint is used to register a new user in the Quora Application.
     * It should be a POST request
     * This endpoint requests for all the attributes in 'SignupUserRequest' about the user.
@@ -88,6 +90,7 @@ public class UserController {
     }
 
     /*
+    ->  signin - "/user/signin"
     * This endpoint is used for user authentication. The user authenticates in the application and after successful
       authentication, JWT token is given to a user.
     * It should be a POST request
@@ -125,6 +128,7 @@ public class UserController {
     }
 
     /*
+    -> signout - "/user/signout"
     * This endpoint is used to sign out from the Quora Application. The user cannot access any other endpoint once he is
       signed out of the application.
     * It should be a POST request.
@@ -138,7 +142,7 @@ public class UserController {
      */
 
     @RequestMapping(method = RequestMethod.POST, path = "/user/signout", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<SignoutResponse> userSignOut(@RequestHeader("authorization") String accesstoken) throws  SignOutRestrictedException {
+    public ResponseEntity<SignoutResponse> userSignOut(@RequestHeader("authorization") String accesstoken) throws SignOutRestrictedException {
         //Signing out the user
         UserAuthEntity userAuthEntity = signOutBusinessService.validateAccessToken(accesstoken);
         //Updating the logout time

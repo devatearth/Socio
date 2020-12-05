@@ -19,6 +19,7 @@ public class AdminController {
     private AdminBusinessService adminBusinessService;
 
     /*
+    -> userDelete - "/admin/user/{userId}"
     * This endpoint is used to delete a user from the Quora Application. Only an admin is authorized to access this endpoint.
     * It should be a DELETE request.
     * This endpoint requests the path variable 'userId' as a string for the corresponding user which is to be deleted

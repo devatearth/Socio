@@ -134,6 +134,7 @@ public class QuestionController {
         QuestionEditResponse questionEditResponse = new QuestionEditResponse().id(updatedQuestionEntity.getUuid()).status("QUESTION EDITED");
         return new ResponseEntity<QuestionEditResponse>(questionEditResponse, HttpStatus.OK);
     }
+
     /*
 
     -> deleteQuestion - "/question/delete/{questionId}"
@@ -167,6 +168,7 @@ public class QuestionController {
         QuestionDeleteResponse questionDeleteResponse = new QuestionDeleteResponse().id(questionId).status("QUESTION DELETED");
         return new ResponseEntity<QuestionDeleteResponse>(questionDeleteResponse, HttpStatus.OK);
     }
+
     /*
 
     -> getAllQuestionsByUser - "question/all/{userId}"
