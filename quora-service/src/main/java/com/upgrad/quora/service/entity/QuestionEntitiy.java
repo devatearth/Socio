@@ -1,5 +1,8 @@
 package com.upgrad.quora.service.entity;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.sql.Timestamp;
@@ -10,6 +13,11 @@ import java.time.ZonedDateTime;
 @Table(name = "question")
 @NamedQueries({
         @NamedQuery(name = "getAllQuestions",query = "Select u from QuestionEntitiy u"),
+        //Added by @github.com/vetrivel-muthusamy
+        @NamedQuery(name = "getQuestionByUuid", query = "select u from QuestionEntitiy u where u.uuid=:uuid"),
+        @NamedQuery(name = "getQuestionById", query = "select u from QuestionEntitiy u where u.userId=:user"),
+        @NamedQuery(name = "questionByQUuid", query = "select q from QuestionEntitiy q where q.uuid =:uuid"),
+       // @NamedQuery(name= "allQuestionsByUserId",query = "select qe from QuestionEntitiy qe inner join qe.user usr where usr.uuid = :uuid"),
 })
 public class QuestionEntitiy {
 
@@ -17,7 +25,7 @@ public class QuestionEntitiy {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Integer id;
 
     //uuid column is universal unique identity field
     @Column(name = "uuid")
@@ -33,17 +41,38 @@ public class QuestionEntitiy {
     @Column(name = "date")
     private ZonedDateTime date;
 
+
     //user_id column will contain the user who posted the question
     @Column(name = "user_id")
     private Integer userId;
 
-    public long getId() {
+
+    /*
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "USER_ID")
+    private UserEntity user;
+
+     */
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
+
+    /*
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
+    }
+    */
+
 
     public String getUuid() {
         return uuid;
@@ -76,6 +105,8 @@ public class QuestionEntitiy {
     public void setUserId(Integer userId) {
         this.userId = userId;
     }
+
+
 
 
 
