@@ -2,7 +2,8 @@
 Developing REST API endpoints of various functionalities required for a website (similar to Quora) from scratch. In order to observe the functionality of the endpoints, you will use the Swagger user interface and store the data in the PostgreSQL database. Also, the project has to be implemented using Java Persistence API (JPA).
 
 The Projects follows the below structure:
-:star 1. quora-api
+
+:star: 1. quora-api
 
 config - This directory must consist of all the required configuration files of the project (if any). We have already provided swagger config file in the stub.
 controller - This directory must consist of all the controller classes required for the project (the list of required controllers along with the API endpoints are listed in the next segment).
