@@ -49,7 +49,9 @@ public class QuestionController {
     * If the access token provided by the user does not exist in the database throw "AuthorizationFailedException" with the message code - 'ATHR-001' and message - 'User has not signed in'.
     * If the user has signed out, throw 'AuthorizationFailedException' with the message code- 'ATHR-002' and message -'User is signed out.Sign in first to post a question'.
     * Else, save the question information in the database and return the 'uuid' of the question and message 'QUESTION CREATED' in the JSON response with the corresponding HTTP status.
-    * This method is responsible for handling a new question creation request from the client side */
+    * This method is responsible for handling a new question creation request from the client side
+
+    */
     @RequestMapping(path = "/question/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<QuestionResponse> createQuestion(@RequestHeader("authorization") final String authTokenString, QuestionRequest question)
             throws AuthorizationFailedException, Exception {

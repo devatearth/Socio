@@ -1,5 +1,9 @@
 quora-api/target/*
 quora-db/target/*
 quora-service/target/*
+quora-api/quora-api.iml
+quora-db/quora-db.iml
+quora-service/quora-service.iml
+quora.iml
 .idea/*
 
