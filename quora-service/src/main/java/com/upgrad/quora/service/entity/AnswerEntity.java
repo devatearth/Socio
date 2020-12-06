@@ -51,6 +51,12 @@ public class AnswerEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private QuestionEntitiy question;
 
+    //Modified by @github.com/vetrivel-muthusamy
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private UserEntity user;
+
     //Added by @github.com/vetrivel-muthusamy
     public QuestionEntitiy getQuestion() {
         return question;
@@ -77,12 +83,6 @@ public class AnswerEntity {
     public void setUuid(String uuid) {
         this.uuid = uuid;
     }
-
-    //Modified by @github.com/vetrivel-muthusamy
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private UserEntity user;
 
     //Added by @github.com/vetrivel-muthusamy
     public UserEntity getUser() {

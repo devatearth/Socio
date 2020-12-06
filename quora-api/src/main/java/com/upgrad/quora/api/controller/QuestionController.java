@@ -4,11 +4,9 @@ import com.upgrad.quora.api.model.*;
 import com.upgrad.quora.service.business.*;
 import com.upgrad.quora.service.entity.QuestionEntitiy;
 import com.upgrad.quora.service.entity.UserAuthEntity;
-import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.InvalidQuestionException;
 import com.upgrad.quora.service.exception.UserNotFoundException;
-import org.aspectj.weaver.patterns.TypePatternQuestions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -64,7 +62,7 @@ public class QuestionController {
         questionEntitiy.setContent(question.getContent());
         questionEntitiy.setDate(ZonedDateTime.now());
         questionEntitiy.setUuid(UUID.randomUUID().toString());
-        questionEntitiy.setUserId(isValidRequestor.getUser());
+        questionEntitiy.setUser(isValidRequestor.getUser());
         QuestionEntitiy persistedQuestion = createQuestionBusinessService.createQuestion(questionEntitiy);
 
         /* 3. finally send the response back to the client side */

@@ -84,11 +84,11 @@ public class QuestionEntitiy {
         this.date = date;
     }
 
-    public UserEntity getUserId() {
+    public UserEntity getUser() {
         return user;
     }
 
-    public void setUserId(UserEntity userId) {
+    public void setUser(UserEntity userId) {
         this.user = userId;
     }
 }

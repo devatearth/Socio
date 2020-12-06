@@ -1,6 +1,8 @@
 package com.upgrad.quora.service.entity;
 
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -27,6 +29,7 @@ public class UserAuthEntity {
     //user_id column will be mapped to User object
     @JoinColumn(name = "user_id")
     @ManyToOne(cascade = CascadeType.ALL)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private UserEntity user;
 
     //access_token column will map to JWT generated token
