@@ -10,6 +10,7 @@ import com.upgrad.quora.service.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,7 +36,7 @@ public class CommonController {
       with the message code -'USR-001' and message -'User with entered uuid does not exist'.
     * Else, return all the details of the user from the database in the JSON response with the corresponding HTTP status.
      */
-    @RequestMapping(path = "/userprofile/{userId}", method = RequestMethod.GET)
+    @RequestMapping(path = "/userprofile/{userId}", method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<UserDetailsResponse> getDetails(@PathVariable("userId") String userId, @RequestHeader("authorization") String accessToken) throws AuthorizationFailedException, UserNotFoundException {
         //Validating the access token
         UserAuthEntity validAuth = commonBusinessService.ValidateAccessToken(accessToken);

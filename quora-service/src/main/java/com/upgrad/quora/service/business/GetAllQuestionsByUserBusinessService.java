@@ -5,6 +5,7 @@ import com.upgrad.quora.service.dao.QuestionDao;
 import com.upgrad.quora.service.dao.UserDao;
 import com.upgrad.quora.service.entity.QuestionEntitiy;
 import com.upgrad.quora.service.entity.UserAuthEntity;
+import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,8 +45,8 @@ public class GetAllQuestionsByUserBusinessService {
         if (userDao.getUserByUuid(userId) == null) {
             throw new UserNotFoundException("USR-001", "User with entered uuid whose question details are to be seen does not exist");
         }
-
-        return questionDao.getAllQuestionsByUser(userId);
+        UserEntity requestingUser = userDao.getUserByUserId(userId);
+        return questionDao.getAllQuestionsByUser(requestingUser);
     }
 
 }

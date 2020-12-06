@@ -8,6 +8,7 @@ import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,7 +36,7 @@ public class AdminController {
     * Else, delete the records from all the tables related to that user and return 'uuid' of the deleted user from
       'users' table and message 'USER SUCCESSFULLY DELETED' in the JSON response with the corresponding HTTP status.
      */
-    @RequestMapping(path = "/admin/user/{userId}", method = RequestMethod.DELETE)
+    @RequestMapping(path = "/admin/user/{userId}", method = RequestMethod.DELETE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<UserDeleteResponse> deleteUser(@PathVariable("userId") String userId, @RequestHeader("authorization") String accessToken) throws AuthorizationFailedException, UserNotFoundException {
         //Validating the access token
         UserAuthEntity validAuth = adminBusinessService.ValidateAccessToken(accessToken);

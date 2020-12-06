@@ -1,6 +1,7 @@
 package com.upgrad.quora.service.dao;
 
 import com.upgrad.quora.service.entity.QuestionEntitiy;
+import com.upgrad.quora.service.entity.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -54,9 +55,9 @@ public class QuestionDao {
         entityManager.remove(questionEntity);
     }
 
-    public List<QuestionEntitiy> getAllQuestionsByUser(final String uuid) {
+    public List<QuestionEntitiy> getAllQuestionsByUser(final UserEntity user) {
         try {
-            return entityManager.createNamedQuery("getAllQuestions", QuestionEntitiy.class).getResultList();
+            return entityManager.createNamedQuery("getQuestionById", QuestionEntitiy.class).setParameter("user",user).getResultList();
         } catch (NoResultException nre) {
             return null;
         }
