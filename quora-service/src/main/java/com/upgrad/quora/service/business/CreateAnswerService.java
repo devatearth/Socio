@@ -48,7 +48,7 @@ public class CreateAnswerService {
     public AnswerEntity createAnswer(final String answer, final String questionId, final String accessToken) throws AuthorizationFailedException, InvalidQuestionException {
 
         UserAuthEntity userAuthEntity = authorizationBusinessService.ValidateAccessToken(accessToken);
-        QuestionEntitiy questionEntity = questionDao.getQuestionByQUuid(questionId);
+        QuestionEntitiy questionEntity = questionDao.getQuestionFromUuid(questionId);
         AnswerEntity answerEntity = new AnswerEntity();
         if (userAuthEntity.getLogoutAt() != null) {
             int difference = userAuthEntity.getLogoutAt().compareTo(ZonedDateTime.now());

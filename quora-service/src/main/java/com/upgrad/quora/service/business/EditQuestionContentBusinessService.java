@@ -39,7 +39,7 @@ public class EditQuestionContentBusinessService {
             }
         }
         // Validate if requested question exist or not
-        QuestionEntitiy existingQuestionEntity = questionDao.getQuestionByQUuid(questionEntity.getUuid());
+        QuestionEntitiy existingQuestionEntity = questionDao.getQuestionFromUuid(questionEntity.getUuid());
         if (existingQuestionEntity == null) {
             throw new InvalidQuestionException("QUES-001", "Entered question uuid does not exist");
         }
