@@ -1,4 +1,4 @@
-# Quora_a_socialApp [Spring_MVC || Swagger || Hibernate || Junit || Mokito || Postgres ] - Web Service :maple_leaf:
+# Socio [Spring_MVC || Swagger || Hibernate || Junit || Mokito || Postgres ] - Web Service :maple_leaf:
 Developing REST API endpoints of various functionalities required for a website (similar to Quora). In order to observe the functionality of the endpoints, you will use the Swagger user interface and store the data in the PostgreSQL database. Also, the project has to be implemented using Java Persistence API (JPA).
 
 The Projects follows the below structure:
